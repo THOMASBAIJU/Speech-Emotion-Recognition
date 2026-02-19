@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Project
+.idea/
+.vscode/
+*.swp
+
+# Data
+data/
+datasets/
+*.wav
+*.mp3
+*.flac
+*.npy
+*.h5
+*.pkl
+
+# Jupyter
+.ipynb_checkpoints
