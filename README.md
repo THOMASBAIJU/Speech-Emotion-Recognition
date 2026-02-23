@@ -21,5 +21,16 @@ We are using the **RAVDESS** (Ryerson Audio-Visual Database of Emotional Speech 
    ```
 3. Download the dataset (see specific instructions in `scripts/` or `data/` directory).
 
-## usage
-Coming soon...
+## Usage
+1. First, preprocess the audio data to extract Mel-spectrograms:
+   ```bash
+   python scripts/preprocess_data.py
+   ```
+2. Next, train the CNN model:
+   ```bash
+   python scripts/train.py
+   ```
+The trained model will be saved as an `.h5` artifact in the `models/` directory.
+
+## Solution Approach
+This project operates by extracting Mel-spectrograms from raw audio to represent the frequency and time characteristics of speech. These representations visually contain features that a Convolutional Neural Network (CNN) can interpret. With our neural network, built via Keras/TensorFlow, we treat the audio signal visually and distinguish varying underlying emotions like Happiness, Sadness, Angry, Disgust, etc. Background Gaussian noise is also synthetically added into the training split to improve real-world stability.
