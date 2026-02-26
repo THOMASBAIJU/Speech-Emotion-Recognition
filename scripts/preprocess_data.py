@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 import pickle
 
-# Emotions in the RAVDESS dataset
-# 01 = neutral, 02 = calm, 03 = happy, 04 = sad, 05 = angry, 06 = fearful, 07 = disgust, 08 = surprised
+# RAVDESS emotions mapping
 RAVDESS_EMOTIONS = {
     '01': 'neutral',
     '02': 'calm',
@@ -18,24 +17,16 @@ RAVDESS_EMOTIONS = {
     '08': 'surprised'
 }
 
-# Modality (01 = full-AV, 02 = video-only, 03 = audio-only).
-# Vocal channel (01 = speech, 02 = song).
-# Emotion (01 = neutral, 02 = calm, 03 = happy, 04 = sad, 05 = angry, 06 = fearful, 07 = disgust, 08 = surprised).
-# Intensity (01 = normal, 02 = strong).
-# Statement (01 = "Kids are talking by the door", 02 = "Dogs are sitting by the door").
-# Repetition (01 = 1st repetition, 02 = 2nd repetition).
-# Actor (01 to 24. Odd=Male, Even=Female).
+# RAVDESS Filename format: Modality-Channel-Emotion-Intensity-Statement-Repetition-Actor
 
 def extract_features(file_name):
-    """
-    Extracts features (mfcc, chroma, mel) from a sound file.
-    """
-    # Load audio file with a fixed duration (e.g., 3 seconds) usually around 2.5-3s in RAVDESS
+    """Extract features from sound file."""
+    # Target 3 seconds
     target_time = 3 # seconds
     try:
         y, sr = librosa.load(file_name, duration=target_time, offset=0.5)
         
-        # Pad if shorter than target_time
+        # Pad or truncate
         target_length = int(target_time * sr)
         if len(y) < target_length:
             y = np.pad(y, (0, target_length - len(y)), 'constant')
@@ -43,12 +34,10 @@ def extract_features(file_name):
             y = y[:target_length]
             
         # Mel Spectrogram
-        # n_mels=128 (Height of image)
         mel_spect = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
         mel_spect_db = librosa.power_to_db(mel_spect, ref=np.max)
         
-        # Add channel dimension (like grayscale image)
-        # Shape: (128, Time, 1)
+        # Add channel dimension
         mel_spect_db = mel_spect_db[..., np.newaxis]
         
         return mel_spect_db
@@ -61,13 +50,11 @@ def load_ravdess_data(data_path):
     features = []
     labels = []
     
-    # Iterate through all files in the RAVDESS directory structure
-    # RAVDESS structure is usually: Actor_01/03-01-01-01-01-01-01.wav
+    # Iterate files
     for file in glob.glob(os.path.join(data_path, "**/*.wav"), recursive=True):
         file_name = os.path.basename(file)
         
-        # Extract emotion from filename
-        # 03-01-06-01-02-01-12.wav
+        # Extract emotion
         parts = file_name.split("-")
         if len(parts) >= 3:
             emotion_code = parts[2]

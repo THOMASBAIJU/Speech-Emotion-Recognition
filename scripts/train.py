@@ -7,17 +7,13 @@ import os
 from model import create_model
 
 def augment_data(X, y):
-    """
-    Applies data augmentation to the dataset by adding random Gaussian noise
-    as a robust proxy for background noise. Since these are spectrograms,
-    adding noise mimics varying recording environments.
-    """
+    """Augment data with Gaussian noise."""
     noise_factor = 0.005 # mild noise
     X_augmented = X + noise_factor * np.random.normal(loc=0.0, scale=1.0, size=X.shape)
-    # Clip the values if they go beyond reasonable limits (spectrograms are usually in dB)
+    # Clip values
     X_augmented = np.clip(X_augmented, np.min(X), np.max(X))
     
-    # Append the augmented data to the original data
+    # Append augmented
     X_combined = np.concatenate((X, X_augmented), axis=0)
     y_combined = np.concatenate((y, y), axis=0)
     
@@ -35,21 +31,20 @@ def main():
     X = np.load(features_path)
     y = np.load(labels_path)
     
-    # Needs label encoding if y are strings, but let's check what y contains
-    # If y contains string labels like 'happy', 'sad', we need to encode them.
+    # Label encoding
     from sklearn.preprocessing import LabelEncoder
     encoder = LabelEncoder()
     y_encoded = encoder.fit_transform(y)
     num_classes = len(np.unique(y_encoded))
     print(f"Classes found: {encoder.classes_}")
     
-    # 1. Split into training and testing sets (80/20 split)
+    # 1. Train/test split
     X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded)
     print(f"Training set: {X_train.shape[0]} samples")
     print(f"Testing set: {X_test.shape[0]} samples")
     
     # 2. Data Augmentation
-    print("Augmenting training data with background noise simulation...")
+    print("Augmenting data...")
     X_train, y_train = augment_data(X_train, y_train)
     print(f"Training set after augmentation: {X_train.shape[0]} samples")
     
@@ -57,7 +52,7 @@ def main():
     input_shape = X_train.shape[1:]
     model = create_model(input_shape, num_classes)
     
-    # 4. Training (Day 4)
+    # 4. Training
     print("Starting model training...")
     history = model.fit(
         X_train, y_train,
@@ -67,7 +62,7 @@ def main():
         verbose=1
     )
     
-    # 5. Evaluation & Refinement (Day 5)
+    # 5. Evaluation
     print("Evaluating model performance on test set...")
     test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
     print(f"Test Accuracy: {test_accuracy * 100:.2f}%")

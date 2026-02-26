@@ -4,14 +4,11 @@ import librosa
 import os
 import tensorflow as tf
 
-# Emotion mappings corresponding to RAVDESS
+# Emotion mappings
 EMOTION_LABELS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
 def extract_single_feature(audio_file_path):
-    """
-    Extract Mel-spectrogram features from a single audio file, matching training prep.
-    Returns expanding feature array shaped (1, 128, X, 1).
-    """
+    """Extract Mel-spectrogram features from a single audio file."""
     target_time = 3 # seconds
     try:
         y, sr = librosa.load(audio_file_path, duration=target_time, offset=0.5)
@@ -47,7 +44,7 @@ def predict_emotion(audio_path):
     model = tf.keras.models.load_model(model_path)
     prediction = model.predict(features)
     
-    # Return as label -> probability dict for Gradio
+    # Return prob dict
     results = {}
     for idx, label in enumerate(EMOTION_LABELS):
         results[label] = float(prediction[0][idx])
@@ -64,5 +61,5 @@ interface = gr.Interface(
 )
 
 if __name__ == "__main__":
-    # Launching local server
+    # Launch server
     interface.launch(share=False)

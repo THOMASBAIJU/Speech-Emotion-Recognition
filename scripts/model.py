@@ -5,45 +5,35 @@ import numpy as np
 import os
 
 def create_model(input_shape, num_classes):
-    """
-    Creates a Convolutional Neural Network (CNN) model for Emotion Recognition.
-    
-    Args:
-        input_shape (tuple): Shape of the input data (height, width, channels).
-                             For RAVDESS Mel-spectrograms, it's typically (128, X, 1).
-        num_classes (int): Number of emotion categories to predict.
-        
-    Returns:
-        model (tf.keras.Model): Compiled Keras CNN model.
-    """
+    """CNN for Emotion Recognition."""
     model = Sequential([
-        # First Convolutional Block
+        # Conv Block 1
         Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=input_shape),
         BatchNormalization(),
         MaxPooling2D(pool_size=(2, 2)),
         Dropout(0.25),
         
-        # Second Convolutional Block
+        # Conv Block 2
         Conv2D(64, kernel_size=(3, 3), activation='relu', padding='same'),
         BatchNormalization(),
         MaxPooling2D(pool_size=(2, 2)),
         Dropout(0.25),
         
-        # Third Convolutional Block
+        # Conv Block 3
         Conv2D(128, kernel_size=(3, 3), activation='relu', padding='same'),
         BatchNormalization(),
         MaxPooling2D(pool_size=(2, 2)),
         Dropout(0.25),
         
-        # Flattening to feed into Dense layers
+        # Flatten
         Flatten(),
         
-        # Fully Connected Block
+        # FC Layers
         Dense(256, activation='relu'),
         BatchNormalization(),
         Dropout(0.5),
         
-        # Output Layer
+        # Output
         Dense(num_classes, activation='softmax')
     ])
     
@@ -54,9 +44,7 @@ def create_model(input_shape, num_classes):
     return model
 
 if __name__ == "__main__":
-    # Test model creation with the processed data shape
-    # Example input shape based on features: (128, 130, 1)
-    # RAVDESS has 8 emotion classes
+    # Test with mockup shape
     input_shape = (128, 130, 1)
     num_classes = 8
     

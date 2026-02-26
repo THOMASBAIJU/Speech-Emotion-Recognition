@@ -31,3 +31,6 @@ datasets/
 .ipynb_checkpoints
 processed_data/
 models/
+
+# Gradio
+.gradio/
